@@ -19,9 +19,9 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{07F495F1-3EC0-4CBD-9E24-16ECE2E72438}</ProjectGuid>
+    <ProjectGuid>{681E1028-D0F3-4883-AD80-6C4B258A16EA}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>omok_player</RootNamespace>
+    <RootNamespace>omok_AI</RootNamespace>
     <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
