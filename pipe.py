@@ -4,7 +4,7 @@ import sys
 from subprocess import Popen, PIPE, STDOUT
 
 if len(sys.argv) < 4:
-    sys.exit('usage: TicTacToe refree player1 player2')
+    sys.exit('Usage: python pipe.py ./refree ./player1 ./player2')
 
 refree_pipe = Popen([sys.argv[1]], stdin = PIPE, stdout = PIPE, bufsize = 1)
 player1_pipe = Popen([sys.argv[2]], stdin = PIPE, stdout = PIPE, bufsize = 1)
