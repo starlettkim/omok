@@ -1,3 +1,5 @@
+// OVER C++11
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <vector>
@@ -46,7 +48,7 @@ int evaluationFunction(int row, int col) {
                 ++cnt;
             }
         }
-        if (!opponent_exists) {
+        if (opponent_cnt == 0) {
             score.push_back(cnt);
         }
 
@@ -55,15 +57,21 @@ int evaluationFunction(int row, int col) {
             int old_col = col + dc[i] * j;
             int new_row = row + dr[i] * (j - 5);
             int new_col = col + dc[i] * (j - 5);
-            // TODO: 범위밖 벗어났을때 예외처리(new_row/col)
+            if (new_row <= 0 || new_row > BOARD_SIZE ||
+                new_col <= 0 || new_col > BOARD_SIZE) {
+                break;
+            }
             opponent_cnt -= (board[old_row][old_col] == OPPONENT);
             opponent_cnt += (board[new_row][new_col] == OPPONENT);
             cnt -= (board[old_row][old_col] == ME);
             cnt += (board[new_row][new_col] == ME);
-            // TODO
-        }
-        
+            if (opponent_cnt == 0) {
+                score.push_back(cnt);
+            }
+        } 
     }
+    // 수정예정
+    return *max_element(score.begin(), score.end());
 }
 
 int main() {
