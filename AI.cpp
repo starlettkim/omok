@@ -22,10 +22,15 @@ typedef struct { int row, col; } Position;
 int evaluationFunction(int row, int col, bool is_my_turn) {
     // N개의 돌이 연속되었을 경우에 대한 가중치값.
     // 심심할때 조정해보면서 놀도록 하자! ㅎㅅㅎ
-    const int WEIGHT_2 = 20;
+    const int WEIGHT_2 = 10;
     const int WEIGHT_3 = 50;
-    const int WEIGHT_4 = 80;
-    const int WEIGHT_5 = 100;
+    const int WEIGHT_4 = 250;
+    const int WEIGHT_5 = 1000;
+    
+    const int OPPONENT_WEIGHT_2 = 10;
+    const int OPPONENT_WEIGHT_3 = 40;
+    const int OPPONENT_WEIGHT_4 = 300;
+    const int OPPONENT_WEIGHT_5 = 900;
 
     // 네 가지 방향.
     int dr[] = { 0, 1, 1, 1 };
@@ -54,7 +59,7 @@ int evaluationFunction(int row, int col, bool is_my_turn) {
     }
 
     //
-    int max_score = 0;
+    vector<int> score;
 
     for (int i = 0; i < 4; i++) {
         // 직선 방향으로 5개의 돌 중 본인 돌의 개수.
@@ -71,8 +76,8 @@ int evaluationFunction(int row, int col, bool is_my_turn) {
                 ++cnt;
             }
         }
-        if (opponent_cnt == 0 && max_score < cnt) {
-            max_score = cnt;
+        if (opponent_cnt == 0) {
+            score.push_back(cnt);
         }
 
         for (int j = 4; j > 0; j--) {
@@ -88,28 +93,25 @@ int evaluationFunction(int row, int col, bool is_my_turn) {
             opponent_cnt += (board[new_row][new_col] == (is_my_turn ? OPPONENT : ME));
             cnt -= (board[old_row][old_col] == (is_my_turn ? ME : OPPONENT));
             cnt += (board[new_row][new_col] == (is_my_turn ? ME : OPPONENT));
-            if (opponent_cnt == 0 && max_score < cnt) {
-                max_score = cnt;
+            if (opponent_cnt == 0) {
+                score.push_back(cnt);
             }
         } 
     }
     
     // 생각보다 시간이 없어서 예정보다 더 대충 짜게 되었다.
-    int ret;
-    switch (max_score) {
-        case 2:
-            ret = WEIGHT_2; break;
-        case 3:
-            ret = WEIGHT_3; break;
-        case 4:
-            ret = WEIGHT_4; break;
-        case 5:
-            ret = WEIGHT_5; break;
-        default:
-            ret = 0;
-    }
-    if (!is_my_turn) {
-        ret = (int)((double)ret * 1.2);
+    int ret = 0;
+    for (auto i : score) {
+        switch (i) {
+            case 2:
+                ret += (is_my_turn ? WEIGHT_2 : OPPONENT_WEIGHT_2); break;
+            case 3:
+                ret += (is_my_turn ? WEIGHT_3 : OPPONENT_WEIGHT_3); break;
+            case 4:
+                ret += (is_my_turn ? WEIGHT_4 : OPPONENT_WEIGHT_4); break;
+            case 5:
+                ret += (is_my_turn ? WEIGHT_5 : OPPONENT_WEIGHT_5); break;
+        }
     }
     return ret;
 }
@@ -139,6 +141,7 @@ int main() {
             }
         }
         Position pick_pos = max_pos[rand() % (int)max_pos.size()];
+        max_pos.clear();
 
         board[pick_pos.row][pick_pos.col] = ME;
         printf("%d %d\n", pick_pos.row, pick_pos.col);
