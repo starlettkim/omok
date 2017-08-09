@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <vector>
 #include <algorithm>
+#include <time.h>
 
 #define BOARD_SIZE  19
 #define ME          1
@@ -16,9 +17,9 @@ typedef struct { int row, col; } Position;
 
 /*
  * 인자로 들어온 (row, col) 위치에 돌을 놓았을 때 얻을 수 있는 기대값을 대충
- * 계산해보고 [0, 100] 사이의 정수로 리턴하는 함수.
+ * 계산해서 리턴하는 함수.
  */
-int evaluationFunction(int row, int col) {
+int evaluationFunction(int row, int col, bool is_my_turn) {
     // N개의 돌이 연속되었을 경우에 대한 가중치값.
     // 심심할때 조정해보면서 놀도록 하자! ㅎㅅㅎ
     const int WEIGHT_2 = 20;
@@ -30,8 +31,30 @@ int evaluationFunction(int row, int col) {
     int dr[] = { 0, 1, 1, 1 };
     int dc[] = { 1, 1, 0, -1};
 
-    // 
-    vector<int> score;
+    // 3.3이면 기대값 0 리턴.
+    int three_cnt = 0;
+    for (int i = 0; i < 4; i++) {
+        int chk_row = row, chk_col = col;
+        int cnt = 0;
+        for (int j = 0; j < 2; j++) {
+            while (board[chk_row][chk_col] == (is_my_turn ? ME : OPPONENT)) {
+                chk_row += dr[i];
+                chk_col += dc[i];
+                cnt++;
+            }
+            dr[i] *= -1;
+            dc[i] *= -1;
+        }
+        if (cnt == 2) {
+            three_cnt++;
+        }
+    }
+    if (three_cnt >= 2) {
+        return 0;
+    }
+
+    //
+    int max_score = 0;
 
     for (int i = 0; i < 4; i++) {
         // 직선 방향으로 5개의 돌 중 본인 돌의 개수.
@@ -42,17 +65,17 @@ int evaluationFunction(int row, int col) {
             int chk_col = col + dc[i] * j;
             if (chk_row <= 0 || chk_row > BOARD_SIZE || 
                 chk_col <= 0 || chk_col > BOARD_SIZE ||
-                board[row + dr[i] * j][col + dc[i] * j] == OPPONENT) {
+                board[row + dr[i] * j][col + dc[i] * j] == (is_my_turn ? OPPONENT : ME)) {
                 ++opponent_cnt;
-            } else if (board[row + dr[i] * j][col + dc[i] * j] == ME) {
+            } else if (board[row + dr[i] * j][col + dc[i] * j] == (is_my_turn ? ME : OPPONENT)) {
                 ++cnt;
             }
         }
-        if (opponent_cnt == 0) {
-            score.push_back(cnt);
+        if (opponent_cnt == 0 && max_score < cnt) {
+            max_score = cnt;
         }
 
-        for (j = 4; j > 0; j--) {
+        for (int j = 4; j > 0; j--) {
             int old_row = row + dr[i] * j;
             int old_col = col + dc[i] * j;
             int new_row = row + dr[i] * (j - 5);
@@ -61,42 +84,64 @@ int evaluationFunction(int row, int col) {
                 new_col <= 0 || new_col > BOARD_SIZE) {
                 break;
             }
-            opponent_cnt -= (board[old_row][old_col] == OPPONENT);
-            opponent_cnt += (board[new_row][new_col] == OPPONENT);
-            cnt -= (board[old_row][old_col] == ME);
-            cnt += (board[new_row][new_col] == ME);
-            if (opponent_cnt == 0) {
-                score.push_back(cnt);
+            opponent_cnt -= (board[old_row][old_col] == (is_my_turn ? OPPONENT : ME));
+            opponent_cnt += (board[new_row][new_col] == (is_my_turn ? OPPONENT : ME));
+            cnt -= (board[old_row][old_col] == (is_my_turn ? ME : OPPONENT));
+            cnt += (board[new_row][new_col] == (is_my_turn ? ME : OPPONENT));
+            if (opponent_cnt == 0 && max_score < cnt) {
+                max_score = cnt;
             }
         } 
     }
-    // 수정예정
-    return *max_element(score.begin(), score.end());
+    
+    // 생각보다 시간이 없어서 예정보다 더 대충 짜게 되었다.
+    int ret;
+    switch (max_score) {
+        case 2:
+            ret = WEIGHT_2; break;
+        case 3:
+            ret = WEIGHT_3; break;
+        case 4:
+            ret = WEIGHT_4; break;
+        case 5:
+            ret = WEIGHT_5; break;
+        default:
+            ret = 0;
+    }
+    if (!is_my_turn) {
+        ret = (int)((double)ret * 1.2);
+    }
+    return ret;
 }
 
 int main() {
+    srand((unsigned int)time(NULL));
     while (true) {
         int row, col;
         scanf("%d %d", &row, &col);
+        fflush(stdin);
         board[row][col] = OPPONENT;
 
-        Position max_pos;
-        int max_value = 0;
+        vector<Position> max_pos;
+        int max_value = 0; 
         for (int i = 1; i <= BOARD_SIZE; i++) {
             for (int j = 1; j <= BOARD_SIZE; j++) {
                 if (!board[i][j]) {
-                    // TODO: min-max tree 구성
-                    int ret = evaluationFunction(i, j);
+                    int ret = evaluationFunction(i, j, 1) + evaluationFunction(i, j, 0);
                     if (max_value < ret) {
                         max_value = ret;
-                        max_pos = ({i, j});
+                        max_pos.clear();
+                        max_pos.push_back({i, j});
+                    } else if (max_value == ret) {
+                        max_pos.push_back({i, j});
                     }
                 }
             }
         }
+        Position pick_pos = max_pos[rand() % (int)max_pos.size()];
 
-        board[max_pos.row][max_pos.col] = ME;
-        printf("%d %d\n", max_pos.row, max_pos.col);
+        board[pick_pos.row][pick_pos.col] = ME;
+        printf("%d %d\n", pick_pos.row, pick_pos.col);
         fflush(stdout);
     }
     return 0;
