@@ -88,12 +88,13 @@ int main() {
         }
         fflush(stdin);
         board[row][col] = OPPONENT;
-        if (row || col) {
-            for (auto iter = empty_pos.begin(); iter != empty_pos.end(); iter++) {
-                if (iter->row == row && iter->col == col) {
-                    empty_pos.erase(iter);
-                }
+        for (int i = 0; i < empty_pos.size(); i++) {
+            if (empty_pos[i].row == row && empty_pos[i].col == col) {
+                empty_pos.erase(empty_pos.begin() + i);
             }
+        }
+        if (empty_pos.empty()) {
+            break;
         }
 
         vector<Position> max_pos;
@@ -126,10 +127,13 @@ int main() {
         board[pick_pos.row][pick_pos.col] = ME;
         printf("%d %d\n", pick_pos.row, pick_pos.col);
         fflush(stdout);
-        for (auto iter = empty_pos.begin(); iter != empty_pos.end(); iter++) {
-            if (iter->row == pick_pos.row && iter->col == pick_pos.col) {
-                empty_pos.erase(iter);
+        for (int i = 0; i < empty_pos.size(); i++) {
+            if (empty_pos[i].row == pick_pos.row && empty_pos[i].col == pick_pos.col) {
+                empty_pos.erase(empty_pos.begin() + i);
             }
+        }
+        if (empty_pos.empty()) {
+            break;
         }
     }
     return 0;
