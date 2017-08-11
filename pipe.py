@@ -26,7 +26,7 @@ while True:
     format_str = player1_put
     if loop == 19 * 19:
         break
-    time.sleep(0.5)
+    time.sleep(0.1)
     loop = loop + 1
 
     player2_pipe.stdin.write(format_str)
@@ -37,16 +37,16 @@ while True:
     if judgement != 'draw\n':
         break
     format_str = player2_put
-    time.sleep(0.5)
+    time.sleep(0.1)
     loop = loop + 1
 
 print(judgement),
 
 player1_pipe.kill()
-player1_pipe.wait()
+# player1_pipe.wait()
 player2_pipe.kill()
-player2_pipe.wait()
+# player2_pipe.wait()
 refree_pipe.kill()
-refree_pipe.wait()
+# refree_pipe.wait()
 
 sys.exit()

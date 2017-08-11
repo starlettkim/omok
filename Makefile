@@ -1,8 +1,12 @@
+FIGHT   = fight.cpp
 PLAYER1 = AI.cpp
 PLAYER2 = AI.cpp
-REFREE = refree.cpp
+REFREE  = refree.cpp
 
-all : player1 player2 refree
+all : fight player1 player2 refree
+
+fight : $(FIGHT)
+	g++ -o fight $(FIGHT)
 
 player1 : $(PLAYER1)
 	g++ -std=c++11 -o player1 $(PLAYER1)
@@ -14,4 +18,4 @@ refree : $(REFREE)
 	g++ -std=c++11 -o refree $(REFREE)
 
 clean :
-	rm player1 player2 refree
+	rm fight player1 player2 refree

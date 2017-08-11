@@ -94,7 +94,6 @@ int evaluationFunction(int row, int col, bool is_my_turn) {
                 ret += (is_my_turn ? WEIGHT_5 : OPPONENT_WEIGHT_5); break;
         }
     }
-    printf("%d, %d: %d\n", row, col, ret);
     return ret;
 }
 
