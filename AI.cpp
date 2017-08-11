@@ -51,7 +51,7 @@ int evaluationFunction(int row, int col, bool is_my_turn) {
                     score = 0;
                     break;
                 } else if (board[chk_row][chk_col] == (is_my_turn ? ME : OPPONENT)) {
-                    score += MY_WEIGHT[++cnt] * weight;
+                        score += (is_my_turn ? MY_WEIGHT[++cnt] : OPPONENT_WEIGHT[++cnt]) * weight;
                 } else {
                     weight *= WEIGHT_SPACE;
                 }
