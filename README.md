@@ -10,15 +10,15 @@ $ make
 
 $ ./fight
 
-다른 프로그램과 붙으려면 Makefile을 수정하면 된당
+다른 프로그램과 붙으려면 Makefile을 수정하면 된당 넘모 쉽죵
 
-## 파일 설명
+## Files
 
 - [AI.cpp](https://github.com/starlettkim/omok/blob/master/AI.cpp): 
 상대방이 돌을 놓음에 따라, AI가 자동으로 돌을 놓는 프로그램.
 
 - [refree.cpp](https://github.com/starlettkim/omok/blob/master/refree.cpp):
-심판 프로그램
+심판 프로그램. 게임의 승/패를 판단한다.
 
 - [pipe.py](https://github.com/starlettkim/omok/blob/master/pipe.py)
 player1, player2, 심판 프로그램 사이에서 표준 입/출력으로 데이터를 주고받는 프로그램.
